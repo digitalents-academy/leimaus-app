@@ -5,7 +5,7 @@ export const clearAllowed = () => {
     return new Date().valueOf() > new Date(year, month, date, "12", "00").valueOf()
 }
 
-const p = ['aaaaa', 'bbbbb', 'ccccc', 'ddddd', 'eeeee', 'fffff', 'ggggg', 'hhhhh', 'iiiii', 'jjjjj', 'kkkkk', 'lllll', 'mmmmmm', 'nnnnn'];
+const p = ['Abdiqani', 'Ahmed', 'Jere', 'Jesse', 'Jessica', 'Hannikainen', 'Jon', 'Mandi', 'Neto', 'Niko', 'Nooa', 'Roope', 'Sonja', 'Vuong'];
 
 export const initPersons = () => {
     let p_list = [];
