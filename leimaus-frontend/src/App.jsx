@@ -82,7 +82,7 @@ function App() {
           >
           Alusta
           </div>) : (
-          <div className='clear-button disabled'>Alustus klo 12</div>
+          <div className='clear-button disabled'>Alustus klo 11</div>
         )}
       </div>
     </div>

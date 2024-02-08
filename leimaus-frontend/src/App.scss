@@ -11,7 +11,7 @@
     flex-wrap: wrap;
     width: 75%;
     height: max-content;
-    gap: 60px;
+    gap: 100px 60px;
     padding: 80px;
 
     .person {
@@ -19,7 +19,7 @@
       justify-content: center;
       align-items: center;
       width: 360px;
-      height: 240px;
+      height: 230px;
       background: gray;
       color: white;
       font-size: 40px;

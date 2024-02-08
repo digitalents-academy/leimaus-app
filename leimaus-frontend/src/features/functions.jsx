@@ -2,10 +2,10 @@ export const clearAllowed = () => {
     let year = new Date().getFullYear()
     let month = new Date().getMonth();
     let date = new Date().getDate();
-    return new Date().valueOf() > new Date(year, month, date, "12", "00").valueOf()
+    return new Date().valueOf() > new Date(year, month, date, "11", "00").valueOf()
 }
 
-const p = ['Abdiqani', 'Ahmed', 'Jere', 'Jesse', 'Jessica', 'Hannikainen', 'Jon', 'Mandi', 'Neto', 'Niko', 'Nooa', 'Roope', 'Sonja', 'Vuong'];
+const p = ['Abdiqani', 'Ahmed', 'Arttu', 'Jere', 'Jesse', 'Leo', 'Mandi', 'Niko', 'Nooa', 'Roope', 'Sonja', 'Vuong'];
 
 export const initPersons = () => {
     let p_list = [];
