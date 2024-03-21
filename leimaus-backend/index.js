@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require("cors");
-const routes = require('./routes/api');
+const stamps = require('./routes/stamps');
+const trainees = require('./routes/trainees');
+const auth = require('./routes/auth');
 require('dotenv').config();
 
 const app = express();
@@ -10,7 +12,7 @@ const port = process.env.PORT || 5000;
 
 // Connect to the database
 mongoose
-  .connect("mongodb://localhost:27017/stampDB", { useNewUrlParser: true })
+  .connect("mongodb://localhost:27017/stampDB")
   .then(() => console.log(`Database connected successfully`))
   .catch((err) => console.log(err));
 
@@ -24,15 +26,11 @@ app.use((req, res, next) => {
 });
 
 app.use(cors());
-
 app.use(express.json());
 
-app.use('/api', routes);
-
-app.use((err, req, res, next) => {
-  console.log(err);
-  next();
-});
+app.use("/api/stamps", stamps);
+app.use("/api/trainees", trainees)
+app.use("/api", auth);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

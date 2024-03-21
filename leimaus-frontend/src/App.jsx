@@ -1,27 +1,48 @@
 import { useState, useEffect } from 'react'
-import { initPersons, getTime, clearAllowed, weekdays } from './features/functions'
+import { getTime, clearAllowed, weekdays } from './features/functions'
 import { UserAuth } from "./context/AuthContext";
 import './App.scss'
 
 function App() {
-  const [persons, setPersons] = useState(initPersons());
+  const [persons, setPersons] = useState([]);
   const [time, setTime] = useState(getTime);
   const [helloText, setHelloText] = useState(null);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showAnalyticModal, setShowAnalyticModal] = useState(false);
+  const [showAddnewModal, setShowAddnewModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [name, setName] = useState(null);
   const [password, setPassword] = useState(null);
   const [analyticData, setAnalyticData] = useState(null);
-  const [databaseStatus, setDatabaseStatus] = useState(true)
+  const [databaseStatus, setDatabaseStatus] = useState(true);
 
   const { user, register, login, logout } = UserAuth();
 
-  useEffect(() => {
-    if (localStorage.stamps) {
-      setPersons(JSON.parse(localStorage.getItem('stamps')))
+  const fetchPersons = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/trainees`);
+      const data = await res.json();
+      // check if person exists in localstorage and replace the data
+      if (localStorage.stamps) {
+        const stamps = JSON.parse(localStorage.getItem('stamps'));
+        for (let i = 0; i < data.length; i++) {
+          const j = stamps.findIndex((stamp) => stamp.name === data[i].name)
+          if (j >= 0) {
+            data[i] = stamps[j]
+          }
+        }
+      }
+      setPersons(data);
+    } catch (error) {
+      console.log(error)
     }
+  }
+
+  useEffect(() => {
+    fetchPersons();
   }, [])
+
 
   useEffect(() => {
     const interval = setInterval(() => setTime(getTime()), 1000);
@@ -44,7 +65,6 @@ function App() {
     }
   }, [databaseStatus]);
 
-
   const createStamp = async () => {
     let d = new Date()
     let current_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate()
@@ -59,7 +79,7 @@ function App() {
       setDatabaseStatus(res.ok)
       if (res.ok) {
         localStorage.removeItem('stamps');
-        setPersons(initPersons())
+        fetchPersons()
       }
     } catch (error) {
       console.log(error);
@@ -82,6 +102,43 @@ function App() {
       setShowAnalyticModal(true);
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  const addNew = async (name) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/trainees", {
+        method: "POST",
+        headers: {
+          "content-type": "application/JSON",
+        },
+        body: JSON.stringify({ name: name }),
+      });
+      setDatabaseStatus(res.ok)
+      setName(null);
+      setShowAddnewModal(false);
+      fetchPersons();
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const deletePerson = async (name) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/trainees", {
+        method: "DELETE",
+        headers: {
+          "content-type": "application/JSON",
+        },
+        body: JSON.stringify({ name: name }),
+      });
+      setDatabaseStatus(res.ok);
+      console.log(res)
+      setName(null);
+      setShowDeleteModal(false);
+      fetchPersons();
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -127,30 +184,38 @@ function App() {
             <label>{helloText}</label>
           </div>
         </div>
-        {user && <label className='user-text'>{user}</label>}
-        {clearAllowed() ? (
-          <div
-            className='clear-button'
-            onClick={() => createStamp()}
-          >
-            Alusta
-          </div>) : (
-          <div className='clear-button disabled'>Alustus klo 11</div>
-        )}
-        {!databaseStatus && <div className='database-error'>Tallennus ei onnistunut</div>}
-        <div className='auth-button' onClick={() => setShowSignupModal(true)}>Sign up</div>
-        <div className='auth-button' onClick={() => setShowLoginModal(true)}>Sign in</div>
-        <div className='auth-button' onClick={() => logout()}>Sign out</div>
+        <div className="buttons">
+          {user && <label className='user-text'>{user}</label>}
+          {user && <div className='auth-button' onClick={() => setShowAddnewModal(true)}>+ Add new</div>}
+          {user && <div className='auth-button' onClick={() => setShowDeleteModal(true)}>- Delete</div>}
+          {clearAllowed() ? (
+            <div
+              className='clear-button'
+              onClick={() => createStamp()}
+            >
+              Tallenna
+            </div>) : (
+            <div className='clear-button disabled'>Tallenna</div>
+          )}
+          {!databaseStatus && <div className='database-error'>Tallennus ei onnistunut</div>}
+          <div className='auth-button' onClick={() => setShowSignupModal(true)}>Sign up</div>
+          <div className='auth-button' onClick={() => setShowLoginModal(true)}>Sign in</div>
+          <div className='auth-button' onClick={() => logout()}>Sign out</div>
+        </div>
       </div>
       {showSignupModal && (
-        <div className="modal">
+        <div className="modal small">
           <div className="modal-content">
-            <label>Rekisteröidy</label>
-            <div className="input-field">
-              <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="input-field">
-              <input type="password" placeholder="Salasana" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <div className="auth-content">
+              <label>Rekisteröidy</label>
+              <div className="inputs">
+                <div className="input-field">
+                  <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
+                </div>
+                <div className="input-field">
+                  <input type="password" placeholder="Salasana" value={password} onChange={(e) => setPassword(e.target.value)} />
+                </div>
+              </div>
             </div>
           </div>
           <div className="modal-buttons">
@@ -168,14 +233,18 @@ function App() {
         </div>
       )}
       {showLoginModal && (
-        <div className="modal">
+        <div className="modal small">
           <div className="modal-content">
-            <label>Kirjaudu sisään</label>
-            <div className="input-field">
-              <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="input-field">
-              <input type="password" placeholder="Salasana" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <div className="auth-content">
+              <label>Kirjaudu sisään</label>
+              <div className="inputs">
+                <div className="input-field">
+                  <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
+                </div>
+                <div className="input-field">
+                  <input type="password" placeholder="Salasana" value={password} onChange={(e) => setPassword(e.target.value)} />
+                </div>
+              </div>
             </div>
           </div>
           <div className="modal-buttons">
@@ -200,7 +269,7 @@ function App() {
                 const d = data.date.split('-');
                 const nd = new Date(d[0], d[1] - 1, d[2])
                 return (
-                  <div className={`analytic-row ${index % 2 === 0 ? "even" : ""}`} >
+                  <div className={`analytic-row ${index % 2 === 0 ? "even" : ""}`} key={index}>
                     <div className='date'>
                       <div>{weekdays[nd.getDay()]}</div>
                       <div>{nd.getDate()}.{nd.getMonth() + 1}</div>
@@ -212,7 +281,7 @@ function App() {
             </div>
           </div>
           <div className="modal-buttons">
-            <button className="cancel-button" onClick={() => {
+            <button className="send-button" onClick={() => {
               setAnalyticData(null);
               setShowAnalyticModal(false);
             }}>
@@ -220,6 +289,56 @@ function App() {
             </button>
           </div>
 
+        </div>
+      )}
+      {showAddnewModal && (
+        <div className="modal small">
+          <div className="modal-content">
+            <div className="auth-content">
+              <label>Lisää uusi pajalainen</label>
+              <div className="inputs">
+                <div className="input-field">
+                  <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-buttons">
+            <button className="send-button" onClick={() => addNew(name)}>
+              Lisää
+            </button>
+            <button className="cancel-button" onClick={() => {
+              setName(null);
+              setShowAddnewModal(false)
+            }}>
+              Peruuta
+            </button>
+          </div>
+        </div>
+      )}
+      {showDeleteModal && (
+        <div className="modal small">
+          <div className="modal-content">
+            <div className="auth-content">
+              <label>Poista pajalainen</label>
+              <div className="inputs">
+                <div className="input-field">
+                  <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-buttons">
+            <button className="send-button" onClick={() => deletePerson(name)}>
+              Poista
+            </button>
+            <button className="cancel-button" onClick={() => {
+              setName(null);
+              setShowDeleteModal(false)
+            }}>
+              Peruuta
+            </button>
+          </div>
         </div>
       )}
     </div>
