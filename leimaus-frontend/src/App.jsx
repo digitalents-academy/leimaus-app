@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
-import { getTime, clearAllowed, weekdays } from './features/functions'
+import { getTime, clearAllowed } from './features/functions'
 import { UserAuth } from "./context/AuthContext";
-import './App.scss'
+import SignupModal from './modals/SignupModal';
+import LoginModal from './modals/LoginModal';
+import AnalyticModal from './modals/AnalyticModal';
+import AddNewModal from './modals/AddNewModal';
+import DeleteModal from './modals/DeleteModal';
+import './styles/App.scss'
 
 function App() {
   const [persons, setPersons] = useState([]);
@@ -10,7 +15,7 @@ function App() {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showAnalyticModal, setShowAnalyticModal] = useState(false);
-  const [showAddnewModal, setShowAddnewModal] = useState(false);
+  const [showAddNewModal, setShowAddNewModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [name, setName] = useState(null);
   const [password, setPassword] = useState(null);
@@ -116,7 +121,7 @@ function App() {
       });
       setDatabaseStatus(res.ok)
       setName(null);
-      setShowAddnewModal(false);
+      setShowAddNewModal(false);
       fetchPersons();
     } catch (error) {
       console.log(error)
@@ -186,7 +191,7 @@ function App() {
         </div>
         <div className="buttons">
           {user && <label className='user-text'>{user}</label>}
-          {user && <div className='auth-button' onClick={() => setShowAddnewModal(true)}>+ Add new</div>}
+          {user && <div className='auth-button' onClick={() => setShowAddNewModal(true)}>+ Add new</div>}
           {user && <div className='auth-button' onClick={() => setShowDeleteModal(true)}>- Delete</div>}
           {clearAllowed() ? (
             <div
@@ -204,142 +209,19 @@ function App() {
         </div>
       </div>
       {showSignupModal && (
-        <div className="modal small">
-          <div className="modal-content">
-            <div className="auth-content">
-              <label>Rekisteröidy</label>
-              <div className="inputs">
-                <div className="input-field">
-                  <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
-                </div>
-                <div className="input-field">
-                  <input type="password" placeholder="Salasana" value={password} onChange={(e) => setPassword(e.target.value)} />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="modal-buttons">
-            <button className="send-button" onClick={() => signup()}>
-              Lähetä
-            </button>
-            <button className="cancel-button" onClick={() => {
-              setName(null);
-              setPassword(null);
-              setShowSignupModal(false)
-            }}>
-              Peruuta
-            </button>
-          </div>
-        </div>
+        <SignupModal name={name} password={password} setName={setName} setPassword={setPassword} signup={signup} setShowSignupModal={setShowSignupModal} />
       )}
       {showLoginModal && (
-        <div className="modal small">
-          <div className="modal-content">
-            <div className="auth-content">
-              <label>Kirjaudu sisään</label>
-              <div className="inputs">
-                <div className="input-field">
-                  <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
-                </div>
-                <div className="input-field">
-                  <input type="password" placeholder="Salasana" value={password} onChange={(e) => setPassword(e.target.value)} />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="modal-buttons">
-            <button className="send-button" onClick={() => signin()}>
-              Lähetä
-            </button>
-            <button className="cancel-button" onClick={() => {
-              setName(null);
-              setPassword(null);
-              setShowLoginModal(false)
-            }}>
-              Peruuta
-            </button>
-          </div>
-        </div>
+        <LoginModal name={name} password={password} setName={setName} setPassword={setPassword} signin={signin} setShowLoginModal={setShowLoginModal} />
       )}
       {showAnalyticModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <div className='analytic-main'>
-              {analyticData.map((data, index) => {
-                const d = data.date.split('-');
-                const nd = new Date(d[0], d[1] - 1, d[2])
-                return (
-                  <div className={`analytic-row ${index % 2 === 0 ? "even" : ""}`} key={index}>
-                    <div className='date'>
-                      <div>{weekdays[nd.getDay()]}</div>
-                      <div>{nd.getDate()}.{nd.getMonth() + 1}</div>
-                    </div>
-                    <div>{data.stamp ? data.stamp : "ei leimausta"}</div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-          <div className="modal-buttons">
-            <button className="send-button" onClick={() => {
-              setAnalyticData(null);
-              setShowAnalyticModal(false);
-            }}>
-              Sulje
-            </button>
-          </div>
-
-        </div>
+        <AnalyticModal analyticData={analyticData} setAnalyticData={setAnalyticData} setShowAnalyticModal={setShowAnalyticModal} />
       )}
-      {showAddnewModal && (
-        <div className="modal small">
-          <div className="modal-content">
-            <div className="auth-content">
-              <label>Lisää uusi pajalainen</label>
-              <div className="inputs">
-                <div className="input-field">
-                  <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="modal-buttons">
-            <button className="send-button" onClick={() => addNew(name)}>
-              Lisää
-            </button>
-            <button className="cancel-button" onClick={() => {
-              setName(null);
-              setShowAddnewModal(false)
-            }}>
-              Peruuta
-            </button>
-          </div>
-        </div>
+      {showAddNewModal && (
+        <AddNewModal name={name} setName={setName} addNew={addNew} setShowAddNewModal={setShowAddNewModal} />
       )}
       {showDeleteModal && (
-        <div className="modal small">
-          <div className="modal-content">
-            <div className="auth-content">
-              <label>Poista pajalainen</label>
-              <div className="inputs">
-                <div className="input-field">
-                  <input type="text" placeholder="Nimi" value={name} onChange={(e) => setName(e.target.value)} />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="modal-buttons">
-            <button className="send-button" onClick={() => deletePerson(name)}>
-              Poista
-            </button>
-            <button className="cancel-button" onClick={() => {
-              setName(null);
-              setShowDeleteModal(false)
-            }}>
-              Peruuta
-            </button>
-          </div>
-        </div>
+        <DeleteModal name={name} setName={setName} deletePerson={deletePerson} setShowDeleteModal={setShowDeleteModal} />
       )}
     </div>
   )
