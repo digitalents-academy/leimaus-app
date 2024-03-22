@@ -8,7 +8,7 @@ import AddNewModal from './modals/AddNewModal';
 import DeleteModal from './modals/DeleteModal';
 import './styles/App.scss'
 
-function App() {
+const App = () => {
   const [persons, setPersons] = useState([]);
   const [time, setTime] = useState(getTime);
   const [helloText, setHelloText] = useState(null);
