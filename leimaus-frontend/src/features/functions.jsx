@@ -11,5 +11,3 @@ export const getTime = (time = new Date()) => {
     const seconds = time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds();
     return hours + ":" + minutes + ":" + seconds;
 }
-
-export const weekdays = ['su', 'ma', 'ti', 'ke', 'to', 'pe', 'la'];
