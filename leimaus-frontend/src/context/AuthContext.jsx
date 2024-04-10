@@ -1,9 +1,17 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const UserContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const interval = setInterval(() => setError(null), 3000);
+        return () => {
+            clearInterval(interval);
+        }
+    }, [error]);
 
     const register = async (name, password) => {
         try {
@@ -14,13 +22,12 @@ export const AuthContextProvider = ({ children }) => {
                 },
                 body: JSON.stringify({ name: name, password: password }),
             });
-        } catch (error) {
-            console.log(error);
+        } catch (e) {
+            console.log(e);
         }
     };
 
     const login = async (name, password) => {
-        console.log("login test frontend")
         try {
             const res = await fetch("http://localhost:5000/api/login", {
                 method: "POST",
@@ -30,9 +37,13 @@ export const AuthContextProvider = ({ children }) => {
                 body: JSON.stringify({ name: name, password: password }),
             });
             const data = await res.json();
-            setUser(data.name);
-        } catch (error) {
-            console.log(error);
+            if (data.name) {
+                setUser(data.name);
+            } else {
+                setError(data.error);
+            }
+        } catch (e) {
+            console.log(e);
         }
     };
 
@@ -40,7 +51,7 @@ export const AuthContextProvider = ({ children }) => {
         setUser(null)
     }
 
-    return <UserContext.Provider value={{ user, register, login, logout }}>{children}</UserContext.Provider>;
+    return <UserContext.Provider value={{ user, error, register, login, logout }}>{children}</UserContext.Provider>;
 };
 
 export const UserAuth = () => {

@@ -68,6 +68,17 @@
       }
     }
 
+    .database-error {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 300px;
+      height: 100px;
+      background: rgb(114, 0, 0);
+      font-size: 30px;
+      color: white;
+    }
+
     .buttons {
       display: flex;
       flex-direction: column;
@@ -78,17 +89,6 @@
       height: max-content;
 
       .user-text {
-        font-size: 30px;
-        color: white;
-      }
-
-      .database-error {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 300px;
-        height: 100px;
-        background: red;
         font-size: 30px;
         color: white;
       }
