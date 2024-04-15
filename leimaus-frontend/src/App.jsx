@@ -62,7 +62,7 @@ const App = () => {
         }
     }, [databaseStatus]);
 
-    const createStamp = async () => {
+    const saveToDatabase = async () => {
         let d = new Date()
         let current_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate()
         try {
@@ -187,7 +187,7 @@ const App = () => {
                     {clearAllowed() ? (
                         <div
                             className='clear-button'
-                            onClick={() => createStamp()}
+                            onClick={() => saveToDatabase()}
                         >
                             Tallenna
                         </div>) : (
