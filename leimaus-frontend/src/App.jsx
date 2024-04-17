@@ -7,6 +7,7 @@ import LoginModal from './modals/LoginModal';
 import AnalyticModal from './modals/AnalyticModal';
 import AddNewModal from './modals/AddNewModal';
 import DeleteModal from './modals/DeleteModal';
+import ArchiveModal from './modals/ArchiveModal';
 import './styles/App.scss'
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
     const [showAnalyticModal, setShowAnalyticModal] = useState(false);
     const [showAddNewModal, setShowAddNewModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showArchiveModal, setShowArchiveModal] = useState(false);
     const [name, setName] = useState(null);
     const [password, setPassword] = useState(null);
     const [analyticData, setAnalyticData] = useState(null);
@@ -182,8 +184,9 @@ const App = () => {
                 {error && <label className='database-error'>{error}</label>}
                 <div className="buttons">
                     {user && <label className='user-text'>{user}</label>}
-                    {user && <div className='auth-button' onClick={() => setShowAddNewModal(true)}>+ Add new</div>}
-                    {user && <div className='auth-button' onClick={() => setShowDeleteModal(true)}>- Delete</div>}
+                    {user && <div className='auth-button' onClick={() => setShowArchiveModal(true)}>Arkisto</div>}
+                    {user && <div className='auth-button' onClick={() => setShowAddNewModal(true)}>+ Lisää uusi</div>}
+                    {user && <div className='auth-button' onClick={() => setShowDeleteModal(true)}>- Poista</div>}
                     {clearAllowed() ? (
                         <div
                             className='clear-button'
@@ -194,9 +197,9 @@ const App = () => {
                         <div className='clear-button disabled'>Tallenna</div>
                     )}
                     {!databaseStatus && <div className='database-error'>Tallennus ei onnistunut</div>}
-                    <div className='auth-button' onClick={() => setShowSignupModal(true)}>Sign up</div>
-                    <div className='auth-button' onClick={() => setShowLoginModal(true)}>Sign in</div>
-                    <div className='auth-button' onClick={() => logout()}>Sign out</div>
+                    <div className='auth-button' onClick={() => setShowSignupModal(true)}>Rekisteröidy</div>
+                    <div className='auth-button' onClick={() => setShowLoginModal(true)}>Kirjaudu</div>
+                    <div className='auth-button' onClick={() => logout()}>Kirjaudu ulos</div>
                 </div>
             </div>
             {showSignupModal && (
@@ -213,6 +216,9 @@ const App = () => {
             )}
             {showDeleteModal && (
                 <DeleteModal name={name} setName={setName} deletePerson={deletePerson} setShowDeleteModal={setShowDeleteModal} />
+            )}
+            {showArchiveModal && (
+                <ArchiveModal fetchData={fetchData} setShowArchiveModal={setShowArchiveModal} />
             )}
         </div>
     )
