@@ -198,8 +198,11 @@ const App = () => {
                     )}
                     {!databaseStatus && <div className='database-error'>Tallennus ei onnistunut</div>}
                     <div className='auth-button' onClick={() => setShowSignupModal(true)}>Rekisteröidy</div>
-                    <div className='auth-button' onClick={() => setShowLoginModal(true)}>Kirjaudu</div>
-                    <div className='auth-button' onClick={() => logout()}>Kirjaudu ulos</div>
+                    {user ?
+                        (<div className='auth-button' onClick={() => logout()}>Kirjaudu ulos</div>)
+                        :
+                        (<div className='auth-button' onClick={() => setShowLoginModal(true)}>Kirjaudu</div>)
+                    }
                 </div>
             </div>
             {showSignupModal && (
