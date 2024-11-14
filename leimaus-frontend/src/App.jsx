@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getTime, clearAllowed } from './features/functions'
+import { getTime } from './features/functions'
 import { UserAuth } from "./context/AuthContext";
 import Clock from './components/Clock';
 import SignupModal from './modals/SignupModal';
@@ -64,7 +64,21 @@ const App = () => {
         }
     }, [databaseStatus]);
 
-    const saveToDatabase = async () => {
+    useEffect(() => {
+        const twentyFourHours = 86400000;
+        const now = new Date();
+        let eta_ms = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 0, 0, 0).getTime() - now;
+        if (eta_ms < 0) {
+            eta_ms += twentyFourHours;
+        }
+        setTimeout(function () {
+            localStorage.removeItem('stamps');
+            fetchPersons()
+            setInterval(func, twentyFourHours);
+        }, eta_ms);
+    }, [])
+
+    const saveToDatabase = async (person_copy) => {
         let d = new Date()
         let current_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate()
         try {
@@ -73,13 +87,9 @@ const App = () => {
                 headers: {
                     "content-type": "application/JSON",
                 },
-                body: JSON.stringify({ date: current_date, data: persons }),
+                body: JSON.stringify({ date: current_date, data: person_copy }),
             });
             setDatabaseStatus(res.ok)
-            if (res.ok) {
-                localStorage.removeItem('stamps');
-                fetchPersons()
-            }
         } catch (error) {
             console.log(error);
         }
@@ -88,6 +98,7 @@ const App = () => {
     const stampHandler = (name, index) => {
         let persons_copy = [...persons];
         persons_copy[index].stamp = getTime();
+        saveToDatabase(persons_copy);
         setPersons(persons_copy);
         setHelloText("Huomenta, " + name + "!");
         localStorage.setItem('stamps', JSON.stringify(persons_copy));
@@ -187,15 +198,6 @@ const App = () => {
                     {user && <div className='auth-button' onClick={() => setShowArchiveModal(true)}>Arkisto</div>}
                     {user && <div className='auth-button' onClick={() => setShowAddNewModal(true)}>+ Lisää uusi</div>}
                     {user && <div className='auth-button' onClick={() => setShowDeleteModal(true)}>- Poista</div>}
-                    {clearAllowed() ? (
-                        <div
-                            className='clear-button'
-                            onClick={() => saveToDatabase()}
-                        >
-                            Tallenna
-                        </div>) : (
-                        <div className='clear-button disabled'>Tallenna</div>
-                    )}
                     {!databaseStatus && <div className='database-error'>Tallennus ei onnistunut</div>}
                     <div className='auth-button' onClick={() => setShowSignupModal(true)}>Rekisteröidy</div>
                     {user ?

@@ -1,10 +1,3 @@
-export const clearAllowed = () => {
-    let year = new Date().getFullYear()
-    let month = new Date().getMonth();
-    let date = new Date().getDate();
-    return new Date().valueOf() > new Date(year, month, date, "11", "00").valueOf()
-}
-
 export const getTime = (time = new Date()) => {
     const hours = time.getHours() < 10 ? "0" + time.getHours() : time.getHours();
     const minutes = time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes();
