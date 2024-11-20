@@ -71,10 +71,11 @@ const App = () => {
         if (eta_ms < 0) {
             eta_ms += twentyFourHours;
         }
-        setTimeout(function () {
-            localStorage.removeItem('stamps');
-            fetchPersons()
-            setInterval(func, twentyFourHours);
+        setTimeout(() => {
+            setInterval(() => {
+                localStorage.removeItem('stamps');
+                fetchPersons()
+            }, twentyFourHours);
         }, eta_ms);
     }, [])
 
