@@ -73,7 +73,11 @@ const App = () => {
             eta_ms += twentyFourHours;
         }
         setTimeout(() => {
+            // execute when the first 15:00
+            localStorage.removeItem('stamps');
+            fetchPersons()
             setInterval(() => {
+                // execute every 15:00 after the first execution
                 localStorage.removeItem('stamps');
                 fetchPersons()
             }, twentyFourHours);
