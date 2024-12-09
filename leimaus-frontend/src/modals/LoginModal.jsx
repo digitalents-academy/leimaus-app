@@ -21,8 +21,8 @@ const LoginModal = ({ name, password, setName, setPassword, signin, setShowLogin
                 Lähetä
             </button>
             <button className="cancel-button" onClick={() => {
-                setName(null);
-                setPassword(null);
+                setName("");
+                setPassword("");
                 setShowLoginModal(false)
             }}>
                 Peruuta

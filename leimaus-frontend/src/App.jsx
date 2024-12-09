@@ -19,8 +19,8 @@ const App = () => {
     const [showAddNewModal, setShowAddNewModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showArchiveModal, setShowArchiveModal] = useState(false);
-    const [name, setName] = useState(null);
-    const [password, setPassword] = useState(null);
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
     const [analyticData, setAnalyticData] = useState(null);
     const [databaseStatus, setDatabaseStatus] = useState(true);
 
@@ -30,6 +30,7 @@ const App = () => {
         try {
             const res = await fetch(`http://localhost:5000/api/trainees`);
             const mernPersons = await res.json();
+            console.log(mernPersons)
             // check if person exists in localstorage and replace the data
             if (localStorage.stamps) {
                 const localPersons = JSON.parse(localStorage.getItem('stamps'));
